@@ -1,0 +1,270 @@
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="default" color="#fff" type="line-scale-pulse-out" [fullScreen]="true">
+  <p style="color: white"> Yükleniyor.. </p>
+</ngx-spinner>
+  <aside
+  class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark"
+  id="sidenav-main">
+<app-sidenav></app-sidenav>
+</aside>
+<main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+<app-nav></app-nav>
+  <div class="container-fluid py-4">
+
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card my-4">
+          <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+            <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+              <h6 class="text-white text-capitalize ps-3"></h6>
+              <button type="button" class="btn bg-gradient-secondary mx-3 btn-lg btn-lg active" data-bs-toggle="modal"
+                data-bs-target="#addAtilModal">
+                <i class=" material-icons library_add">library_add</i> Atılacak Ekle </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <div class="row">
+
+                <div class="card-body">
+                  <div class="input-group input-group-outline my-3" style="width: 20%; margin-left: 80%;">
+                    <label class="form-label">Aranacak Kelimeyi Yazın</label>
+                    <input type="text" autocomplete="off" [(ngModel)]="searchString" class="form-control">
+                  </div>
+                </div>
+
+                <div class="card-body px-0 pb-2">
+                  <div class="table-responsive p-0">
+                    <table class="table align-items-center mb-0">
+                      <thead>
+                        <tr>
+                          <th class=" text-uppercase text-secondary text-xm font-weight-bolder opacity-7">Atılan Urun</th>
+                          <th class=" text-uppercase text-secondary text-xm font-weight-bolder opacity-7">Atil Nedeni</th>
+                          <th class=" text-uppercase text-secondary text-xm font-weight-bolder opacity-7">Atil Miktarı
+                          </th>
+
+                          <th class=" text-uppercase text-secondary text-xm font-weight-bolder opacity-7">Not</th>
+
+                          <th class=" text-uppercase text-secondary text-xm font-weight-bolder opacity-7">İşlemler</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let atil of atillar | atillarPipe: searchString ">
+
+                          <td >
+                            <div class="d-flex flex-column justify-content-center">
+
+                              <h6 class="mb-0 text-sm">
+                                {{atil.urunFk}}</h6>
+
+
+                            </div>
+                          </td>
+
+
+
+
+                          <td>
+                            <div class="d-flex flex-column justify-content-center">
+                              <h6 class="mb-0 text-sm"><i class=text-success> Atıl Nedeni: </i>
+                                {{atil.atilNedeni}}</h6>
+
+
+                            </div>
+                          </td>
+                          <td>
+                            <h6 class="mb-0 text-sm"><i class=text-info>  Atıl Miktarı: </i>
+                              {{atil.atilMiktar}}</h6>
+
+
+                          </td>
+
+
+                          <td>
+                            <div class="d-flex flex-column justify-content-center">
+
+                              <h6 class="mb-0 text-sm">
+                                {{atil.not}}</h6>
+
+
+                            </div>
+                          </td>
+                          <td class="align-middle">
+                            <button type="button" class="btn btn-warning btn-ml mx-2" title="Güncelle" (click)="getAtil(atil.id)"
+                             >
+                              <i class="material-icons opacity-10" data-bs-toggle="modal"
+                                data-bs-target="#updateAtilModal">edit</i>
+                            </button>
+
+                            <button type="button" [swal]="deleteSwal" (confirm)="deleteAtillar(atil.id)"
+                              class="btn btn-primary btn-ml" title="Sil" (click)="currentAtil(atil)">
+                              <i class="material-icons opacity-10">restore_from_trash</i>
+                            </button>
+                          </td>
+                        </tr>
+
+
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <swal #deleteSwal title="Sil?" text="Atılanı silmek istiyor musunuz ?" type="question" [showCancelButton]="true"
+          [focusCancel]="true" [swalOptions]="{ confirmButtonText: 'Sil' }"></swal>
+
+      </div>
+    </div>
+  </div>
+      <!-- Modal -->
+      <div class="modal fade" id="addAtilModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+      aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title font-weight-normal" id="exampleModalLabel">Atıl Ekleme Formu</h5>
+            <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form [formGroup]="addForm">
+              <div class="row">
+                <div class="col-md-6">
+                  <div [class]="changeInputClass(ekleyenKullaniciFk)">
+                    <label class="form-label">Ekleyen Kullanıcı</label>
+                    <input type="text" formControlName="ekleyenKullaniciFk" [(ngModel)]="ekleyenKullaniciFk"
+                    class="form-control">
+                  </div>
+                  <div>
+                    <label class="form-label">Urun</label>
+                    <select class="form-select" formControlName="urunFk">
+                      <option *ngFor="let urun of urunler" [value]="urun.id">{{urun.urunAdi}}
+
+                      </option>
+                    </select>
+                  </div>
+                  <div [class]="changeInputClass(atilNedeni)">
+                    <label class="form-label">Atıl Nedeni</label>
+                    <input type="text" formControlName="atilNedeni" [(ngModel)]="atilNedeni"
+                      class="form-control">
+
+                  </div>
+                  <div [class]="changeInputtClass(atilMiktar)">
+                    <label class="form-label">Atıl Miktarı</label>
+                    <input type="text" formControlName="atilMiktar" [(ngModel)]="atilMiktar"
+                      class="form-control">
+                  </div>
+
+                  <div [class]="changeInputtClass(atilTip)">
+                    <label class="form-label">Atıl Tip</label>
+                    <input type="text" formControlName="atilTip" [(ngModel)]="atilTip"
+                      class="form-control">
+                  </div>
+                  <div>
+                    <label class="form-label">Oluşturulan Tarih</label>
+                    <input type="date" formControlName="olusturulanTarih" [(ngModel)]="olusturulanTarih"
+                      class="form-control">
+                  </div>
+
+
+                  <div [class]="changeInputClass(not)">
+                    <label class="form-label">Not</label>
+                    <input type="text" formControlName="not" [(ngModel)]="not"
+                      class="form-control">
+                  </div>
+                </div>
+
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn bg-gradient-primary" (click)="saveAtil()">Atil Ekle</button>
+            <button type="button" class="btn bg-gradient-secondary" id="closeCurrencyAccountModal"
+              data-bs-dismiss="modal">Kapat</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+      <!-- Modal -->
+   <div class="modal fade" id="updateAtilModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+   aria-hidden="true">
+   <div class="modal-dialog modal-lg" role="document">
+     <div class="modal-content">
+       <div class="modal-header">
+         <h5 class="modal-title font-weight-normal" id="exampleModalLabel">Atil Güncelleme Formu</h5>
+         <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Close">
+           <span aria-hidden="true">&times;</span>
+         </button>
+       </div>
+       <div class="modal-body">
+         <form [formGroup]="updateAtilForm">
+           <div class="row">
+             <div class="col-md-6">
+              <div class="input-group input-group-dynamic mb-4">
+                 <input type="text" formControlName="ekleyenKullaniciFk" [(ngModel)]="ekleyenKullaniciFk" class="form-control">
+                 <span class="input-group-text" id="basic-addon2">Ekleyen Kullanıcı</span>
+               </div>
+
+               <div>
+                <label class="form-label">Urun</label>
+                <select class="form-select" formControlName="urunFk">
+                  <option *ngFor="let urun of urunler" [value]="urun.id">{{urun.urunAdi}}
+
+                  </option>
+                </select>
+              </div>
+
+               <div class="input-group input-group-dynamic mb-4">
+                 <input type="text" formControlName="atilNedeni" [(ngModel)]="atilNedeni"
+                   class="form-control">
+                   <span class="input-group-text" id="basic-addon2">Atıl Nedeni</span>
+               </div>
+
+               <div class="input-group input-group-dynamic mb-4">
+                <input type="text" formControlName="atilMiktar" [(ngModel)]="atilMiktar"
+                  class="form-control">
+                  <span class="input-group-text" id="basic-addon2">Atıl Miktarı</span>
+              </div>
+
+              <div class="input-group input-group-dynamic mb-4">
+                <input type="text" formControlName="atilTip" [(ngModel)]="atilTip"
+                  class="form-control">
+                  <span class="input-group-text" id="basic-addon2">Atıl Tip(1)</span>
+              </div>
+
+               <div>
+                 <label class="form-label">Güncelleme Tarihi</label>
+                 <input type="date" formControlName="guncellemeTarihi" [(ngModel)]="guncellemeTarihi"
+                   class="form-control">
+
+               </div>
+               <div class="input-group input-group-dynamic mb-4">
+
+                 <input type="text" formControlName="not" [(ngModel)]="not"
+                   class="form-control">
+                   <span class="input-group-text" id="basic-addon2">Not</span>
+               </div>
+             </div>
+
+           </div>
+         </form>
+       </div>
+       <div class="modal-footer">
+         <button type="button" class="btn bg-gradient-primary" (click)="updateAtil()">Atıl Güncelle</button>
+         <button type="button" class="btn bg-gradient-secondary" id="closeCurrencyAccountModal"
+           data-bs-dismiss="modal">Kapat</button>
+       </div>
+     </div>
+   </div>
+ </div>
+
+</main>
+

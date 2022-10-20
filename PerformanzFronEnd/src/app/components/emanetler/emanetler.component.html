@@ -1,0 +1,355 @@
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="default" color="#fff" type="line-scale-pulse-out" [fullScreen]="true">
+  <p style="color: white"> Yükleniyor.. </p>
+</ngx-spinner>
+
+
+<aside
+  class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3   bg-gradient-dark"
+  id="sidenav-main">
+  <app-sidenav></app-sidenav>
+</aside>
+<main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+  <app-nav></app-nav>
+  <div class="container-fluid py-4">
+    <div class="row">
+      <div class="col-12">
+        <div class="card my-4">
+          <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+            <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3">
+              <h6 class="text-white text-capitalize ps-3">{{title}}</h6>
+              <button type="button" class="btn bg-gradient-secondary mx-3 btn-lg btn-lg active" data-bs-toggle="modal"
+                data-bs-target="#addEmanetModal">
+                <i class=" material-icons library_add">library_add</i> Emanet Ekle </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              <div class="row">
+                <div class="col-md-1">
+                  <div class="form-check form-switch d-flex align-items-center mb-3">
+                    <input class="form-check-input" type="checkbox" id="allList" [(ngModel)]="allList"
+                      (change)="getListByCheck('allList')">
+                    <label class="form-check-label mb-0 ms-2" for="allList"> Tümü</label>
+                  </div>
+                </div>
+                <div class="col-md-1">
+                  <div class="form-check form-switch d-flex align-items-center mb-3">
+                    <input class="form-check-input" type="checkbox" id="activeList" [(ngModel)]="activeList" checked
+                      (change)="getListByCheck('activeList')">
+                    <label class="form-check-label mb-0 ms-2" for="activeList"> Aktif</label>
+                  </div>
+                </div>
+                <div class="col-md-1">
+                  <div class="form-check form-switch d-flex align-items-center mb-3">
+                    <input class="form-check-input" type="checkbox" id="passiveList" [(ngModel)]="passiveList"
+                      (change)="getListByCheck('passiveList')">
+                    <label class="form-check-label mb-0 ms-2" for="passiveList"> Pasif</label>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="input-group input-group-outline my-3" style="width: 20%; margin-left: 80%;">
+                    <label class="form-label">Aranacak Kelimeyi Yazın</label>
+                    <input type="text" autocomplete="off" [(ngModel)]="searchString" class="form-control">
+                  </div>
+                </div>
+
+                <div class="card-body px-0 pb-2">
+                  <div class="table-responsive p-0">
+                    <table class="table align-items-center mb-0">
+                      <thead>
+                        <tr>
+
+                          <th class=" text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Müşteri
+                            Ad-Soyad/CihazKod/Müşteri adres/Müşteri Telefon</th>
+                          <th class=" text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Emanet
+                            Miktari/Teslim Etme Tarihi/Teslim eden kişi</th>
+                          <th class=" text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Teslim alma
+                            Tarihi/Teslim alan kişi/</th>
+                          <th class=" text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Not</th>
+                          <th class=" text-uppercase text-secondary text-xs font-weight-bolder opacity-7">Kayıt
+                            Tarihi/Teslim Durumu</th>
+                          <th class=" text-uppercase text-secondary text-xs font-weight-bolder opacity-7">İşlemler</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let emanet of emanetler | emanetler:searchString  | emanetFilterPipe:filterText">
+                          <td>
+                            <div class="d-flex px-2 py-1">
+
+                              <div class="d-flex flex-column justify-content-center">
+                                <h6 class="mb-0 text-sm">{{emanet.musteriAdSoyad}}</h6>
+                                <p class="mb-0 text-sm">{{emanet.cihazFk}}</p>
+                                <p class="mb-0 text-sm">{{emanet. musteriAdres}}</p>
+                                <p class="mb-0 text-sm">{{emanet.musteriTelefon}}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <div class="d-flex flex-column justify-content-center">
+                              <h6 class="mb-0 text-sm"><i class=text-danger> Emanet miktarı: </i>
+                                {{emanet.emanetMiktari}}</h6>
+                              <h6 class="mb-0 text-sm"><i class=text-danger> Teslim etme Tarihi: </i>
+                                {{emanet.teslimEtmeTarihi |
+                                date: 'dd.MM.yyyy' }}</h6>
+                              <h6 class="mb-0 text-sm"><i class=text-danger> Teslim eden kişi: </i>
+                                {{emanet.teslimEdenKisi}}</h6>
+
+                            </div>
+                          </td>
+                          <td>
+                            <h6 class="mb-0 text-sm"><i class=text-info> Teslim alma Tarihi: </i>
+                              {{emanet.teslimAlmaTarihi |
+                              date: 'dd.MM.yyyy'}}</h6>
+                            <h6 class="mb-0 text-sm"><i class=text-info> Teslim alan kişi: </i>
+                              {{emanet.teslimAlanKisi}}</h6>
+
+                          </td>
+                          <td class="align-middle text-center">
+                            <h6 class="mb-0 text-sm">{{emanet.not}}</h6>
+                          </td>
+                          <td>
+                            <div class="d-flex flex-column justify-content-center">
+
+                              <h6 class="mb-0 text-sm"><i class=text-secondary> Kayıt Tarihi: </i>
+                                {{emanet.olusturulanTarih |
+                                date: 'dd.MM.yyyy'}}</h6>
+                              <h6 class="mb-0 text-sm"><i class=text-secondary> Teslim Durumu: </i> {{emanet.durum?
+                                "Aktif":"Pasif"}}</h6>
+
+                            </div>
+                          </td>
+                          <td class="align-middle">
+                            <button type="button" class="btn btn-warning btn-sm mx-2" title="Güncelle"
+                              (click)="getEmanet(emanet.id)">
+                              <i class="material-icons opacity-10" data-bs-toggle="modal"
+                                data-bs-target="#updateEmanetModal">edit</i>
+                            </button>
+                            <button type="button" [swal]="changeStatusSwal" (confirm)="changeStatusEmanet(emanet)"
+                              class="btn btn-info btn-sm mx-2" title="Durumu Degiştir" (click)="currentEmanet(emanet)">
+                              <i class="material-icons opacity-10">check_box</i>
+                            </button>
+                            <button type="button" [swal]="deleteSwal" (confirm)="deleteEmanetler(emanet.id)"
+                              class="btn btn-primary btn-sm" title="Sil" (click)="currentEmanet(emanet)">
+                              <i class="material-icons opacity-10">restore_from_trash</i>
+                            </button>
+                          </td>
+                        </tr>
+
+
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <swal #deleteSwal title="Sil?" text="Emaneti silmek istiyor musunuz ?" type="question" [showCancelButton]="true"
+          [focusCancel]="true" [swalOptions]="{ confirmButtonText: 'Sil' }"></swal>
+
+        <swal #changeStatusSwal title="Durumu degiştir?"
+          text="Emanet durumunu (Aktif<==>Pasif) degiştirmek istiyor musunuz ?" type="question"
+          [showCancelButton]="true" [focusCancel]="true" [swalOptions]="{ confirmButtonText: 'Degiştir' }"></swal>
+
+      </div>
+    </div>
+  </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="addEmanetModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+          aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title font-weight-normal" id="exampleModalLabel">Emanet Ekleme Formu</h5>
+                <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form [formGroup]="addForm">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div [class]="changeInputClass(ekleyenKullaniciFk)">
+                        <label class="form-label">Ekleyen Kullanıcı</label>
+                        <input type="text" formControlName="ekleyenKullaniciFk" [(ngModel)]="ekleyenKullaniciFk" class="form-control" >
+                      </div>
+                      <div>
+                        <label class="form-label">Cihaz</label>
+                        <select class="form-select" formControlName="cihazFk">
+                          <option *ngFor="let cihaz of cihazlar" [value]="cihaz.id">{{cihaz.cihazKod}}
+
+                          </option>
+                        </select>
+                      </div>
+                      <div [class]="changeInputClass(musteriAdSoyad)">
+                        <label class="form-label">Müşteri Ad-Soyad</label>
+                        <input type="text" formControlName="musteriAdSoyad" [(ngModel)]="musteriAdSoyad"
+                          class="form-control">
+                      </div>
+
+                      <div [class]="changeInputClass(musteriTelefon)">
+                        <label class="form-label">Müşteri Telefon</label>
+                        <input type="text" formControlName="musteriTelefon" [(ngModel)]="musteriTelefon"
+                          class="form-control">
+                      </div>
+                      <div [class]="changeInputClass(musteriAdres)">
+                        <label class="form-label">Müşteri Adres</label>
+                        <input type="text" formControlName="musteriAdres" [(ngModel)]="musteriAdres"
+                          class="form-control">
+                      </div>
+                      <div [class]="changeInputtClass(durum)">
+                        <label class="form-label">Durum</label>
+                        <input type="text" formControlName="durum" [(ngModel)]="durum" class="form-control">
+                      </div>
+                      <div [class]="changeInputClass(teslimEdenKisi)">
+                        <label class="form-label">Teslim Eden kişi</label>
+                        <input type="text" formControlName="teslimEdenKisi" [(ngModel)]="teslimEdenKisi"
+                          class="form-control">
+                      </div>
+                      <div>
+                        <label class="form-label">Teslim Etme Tarihi</label>
+                        <input type="date" formControlName="teslimEtmeTarihi" [(ngModel)]="teslimEtmeTarihi"
+                          class="form-control">
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div>
+                        <label class="form-label">Teslim Alma Tarihi</label>
+                        <input type="date" formControlName="teslimAlmaTarihi" [(ngModel)]="teslimAlmaTarihi"
+                          class="form-control">
+                      </div>
+                      <div [class]="changeInputClass(teslimAlanKisi)">
+                        <label class="form-label">Teslim Alan kişi</label>
+                        <input type="text" formControlName="teslimAlanKisi" [(ngModel)]="teslimAlanKisi"
+                          class="form-control">
+                      </div>
+                      <div [class]="changeInputtClass(emanetMiktari)">
+                        <label class="form-label">Emanet Miktarı</label>
+                        <input type="text" formControlName="emanetMiktari" [(ngModel)]="emanetMiktari"
+                          class="form-control">
+                      </div>
+
+                      <div>
+                        <label class="form-label">Oluşturulan Tarih</label>
+                        <input type="date" formControlName="olusturulanTarih" [(ngModel)]="olusturulanTarih"
+                          class="form-control">
+                      </div>
+                      <div [class]="changeInputClass(not)">
+                        <label class="form-label">Not</label>
+                        <input type="text" formControlName="not" [(ngModel)]="not" class="form-control">
+                      </div>
+                    </div>
+                  </div>
+
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn bg-gradient-primary" (click)="saveEmanet()">Emanet Ekle</button>
+                <button type="button" class="btn bg-gradient-secondary" id="closeCurrencyAccountModal"
+                  data-bs-dismiss="modal">Kapat</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="updateEmanetModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle"
+          aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title font-weight-normal" id="exampleModalLabel">Emanet Güncelleme Formu</h5>
+                <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form [formGroup]="updateForm">
+                  <div class="input-group input-group-dynamic mb-4">
+
+                    <input type="text" formControlName="cihazFk" placeholder="Cihaz Kod" class="form-control">
+                    <span class="input-group-text" id="basic-addon2">Cihaz Kod</span>
+                  </div>
+                  <div class="input-group input-group-dynamic mb-4">
+
+                    <input type="text" formControlName="musteriAdSoyad" placeholder="Müşteri Ad-Soyad"
+                      class="form-control">
+                    <span class="input-group-text" id="basic-addon2">Müşteri Ad-Soyad</span>
+                  </div>
+
+                  <div class="input-group input-group-dynamic mb-4">
+
+                    <input type="text" formControlName="musteriTelefon" placeholder="Müşteri Telefon"
+                      class="form-control">
+                    <span class="input-group-text" id="basic-addon2">Müşteri Telefon</span>
+                  </div>
+                  <div class="input-group input-group-dynamic mb-4">
+
+                    <input type="text" formControlName="musteriAdres" placeholder="Müşteri Adres" class="form-control">
+                    <span class="input-group-text" id="basic-addon2">Müşteri Adres</span>
+                  </div>
+                  <div class="input-group input-group-dynamic mb-4">
+
+                    <input type="text" formControlName="durum" placeholder="Durum" class="form-control">
+                    <span class="input-group-text" id="basic-addon2">Durum(Aktif:1 Pasif:0)
+                    </span>
+                  </div>
+                  <div class="input-group input-group-dynamic mb-4">
+
+                    <input type="text" formControlName="teslimEdenKisi" placeholder="Teslim Eden kişi"
+                      class="form-control">
+                    <span class="input-group-text" id="basic-addon2">Teslim Eden Kişi</span>
+                  </div>
+                  <div class="input-group input-group-dynamic mb-4">
+                    <label class="form-label">Teslim Etme Tarihi</label>
+                    <input type="date" formControlName="teslimEtmeTarihi" class="form-control">
+
+                  </div>
+
+                  <div class="input-group input-group-dynamic mb-4">
+                    <label class="form-label"> Teslim Alma Tarihi</label>
+                    <input type="date" formControlName="teslimAlmaTarihi" class="form-control">
+
+                  </div>
+                  <div class="input-group input-group-dynamic mb-4">
+
+                    <input type="text" formControlName="teslimAlanKisi" placeholder="Teslim Alan kişi"
+                      class="form-control">
+                    <span class="input-group-text" id="basic-addon2">Teslim Alan Kişi</span>
+                  </div>
+                  <div class="input-group input-group-dynamic mb-4">
+
+                    <input type="text" formControlName="emanetMiktari" placeholder="Emanet Miktarı"
+                      class="form-control">
+                    <span class="input-group-text" id="basic-addon2">Emanet Miktarı</span>
+                  </div>
+
+                  <div class="input-group input-group-dynamic mb-4">
+                    <label class="form-label">Oluşturulan Tarih</label>
+                    <input type="date" formControlName="olusturulanTarih" class="form-control">
+
+                  </div>
+                  <div class="input-group input-group-dynamic mb-4">
+
+                    <input type="text" formControlName="not" placeholder="Not" class="form-control">
+                    <span class="input-group-text" id="basic-addon2">Not</span>
+                  </div>
+
+
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn bg-gradient-primary" (click)="updateEmanet()">Emanet Güncelle</button>
+                <button type="button" class="btn bg-gradient-secondary" id="closeupdateEmanetModal"
+                  data-bs-dismiss="modal">Kapat</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+</main>
